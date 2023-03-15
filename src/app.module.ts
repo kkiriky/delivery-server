@@ -8,6 +8,9 @@ import { AllExceptionsFilter } from './common/exception-filter/all-exception.fil
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeormOptionsFactory } from './common/options/typeorm.options';
+import { User } from './user/entities/user.entity';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { typeormOptionsFactory } from './common/options/typeorm.options';
       useFactory: typeormOptionsFactory,
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([User]),
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

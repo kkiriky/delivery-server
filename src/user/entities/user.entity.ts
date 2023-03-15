@@ -7,13 +7,13 @@ import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity()
 export class User extends BaseEntity {
-  @ApiProperty({ uniqueItems: true })
+  @ApiProperty({ example: 'test@gmail.com' })
   @IsNotEmpty()
   @IsEmail()
   @Column({ unique: true, length: 50 })
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '123' })
   @IsNotEmpty()
   @IsString()
   @Column({ select: false })

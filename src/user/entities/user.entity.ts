@@ -1,25 +1,25 @@
+import { StringColumn } from '@/common/decorators/entity-property.decorator';
 import { BaseEntity } from '@/common/entities/base.entity';
 import { Order } from '@/order/entities/order.entity';
 import { Review } from '@/review/entities/review.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity()
 export class User extends BaseEntity {
   @ApiProperty({ example: 'test@gmail.com' })
-  @IsNotEmpty()
   @IsEmail()
   @Column({ unique: true, length: 50 })
   email: string;
 
-  @ApiProperty({ example: '123' })
-  @IsNotEmpty()
-  @IsString()
-  @Column({ select: false })
+  @StringColumn({
+    columnOptions: { select: false },
+    apiPropertyOptions: { example: '123' },
+  })
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '/assets/images/logo/kkiri.png' })
   @IsString()
   @Column({ nullable: true })
   imageUrl: string;

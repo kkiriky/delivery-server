@@ -1,40 +1,29 @@
+import {
+  IntColumn,
+  StringColumn,
+} from '@/common/decorators/entity-property.decorator';
 import { BaseEntity } from '@/common/entities/base.entity';
 import { Restaurant } from '@/restaurant/entities/restaurant.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsString, IsNotEmpty } from 'class-validator';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Entity, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Product extends BaseEntity {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @Column()
+  @StringColumn()
   name: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @Column()
+  @StringColumn()
   imgUrl: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @Column({ type: 'text' })
+  @StringColumn({ columnOptions: { type: 'text' } })
   detail: string;
 
-  @ApiProperty()
-  @IsInt()
-  @Column()
+  @IntColumn()
   price: number;
 
   @ApiProperty({ type: () => Restaurant })
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.products)
   restaurant: Restaurant;
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @Column()
+  @StringColumn()
   restaurantId: string;
 }

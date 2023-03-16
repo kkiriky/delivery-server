@@ -1,7 +1,7 @@
+import { ApiHeaderBearer } from '@/common/decorators/api-header-bearer.decorator';
 import { Body, Controller, Post, Request } from '@nestjs/common';
 import {
   ApiCreatedResponse,
-  ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -24,7 +24,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '액세스 토큰 리프레시' })
-  @ApiHeader({ name: 'Authorization', required: true, description: 'Bearer' })
+  @ApiHeaderBearer()
   @ApiCreatedResponse({ type: RefreshResponse })
   @Post('token')
   refresh(@Request() req: RequestType): Promise<RefreshResponse> {

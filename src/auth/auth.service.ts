@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Repository } from 'typeorm';
 import {
   BadRequestException,
@@ -42,11 +41,10 @@ export class AuthService {
   }
 
   async refresh(authorization: string | undefined) {
-    if (!authorization) {
+    const refreshToken = authorization?.split(' ')[1];
+    if (!refreshToken) {
       throw new UnauthorizedException('토큰이 존재하지 않습니다.');
     }
-
-    const refreshToken = authorization.split(' ')[1];
 
     try {
       const payload = jwt.verify(

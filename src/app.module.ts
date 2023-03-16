@@ -13,6 +13,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { RestaurantsModule } from './restaurants/restaurants.module';
+import { Product } from './products/entities/product.entity';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
       useFactory: typeormOptionsFactory,
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Restaurant]),
+    TypeOrmModule.forFeature([User, Restaurant, Product]),
     UserModule,
     AuthModule,
     RestaurantsModule,

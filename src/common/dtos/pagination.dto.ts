@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsOptional, IsString } from 'class-validator';
+import { uuidExample } from '../constants/common.constants';
 
 export class PaginationQueries {
   @ApiProperty({ example: 20, required: false })
@@ -8,7 +9,7 @@ export class PaginationQueries {
   count?: number;
 
   @ApiProperty({
-    example: 'f45af886-991b-464d-a96a-7ef2e81af3fa',
+    example: uuidExample,
     required: false,
   })
   @IsOptional()

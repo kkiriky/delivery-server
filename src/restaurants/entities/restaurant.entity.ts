@@ -4,27 +4,19 @@ import { Order } from '@/orders/entities/order.entity';
 import { Product } from '@/products/entities/product.entity';
 import { Review } from '@/reviews/entities/review.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsArray,
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsInt, IsNumber } from 'class-validator';
 import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 
 @Entity()
 export class Restaurant extends BaseEntity {
-  @ApiProperty({ example: '불타는 떡볶이' })
-  @IsNotEmpty()
-  @IsString()
-  @Column()
+  @StringColumn({
+    apiPropertyOptions: { example: '불타는 떡볶이' },
+  })
   name: string;
 
-  @ApiProperty({ example: '/images/떡볶이/떡볶이.jpg' })
-  @IsNotEmpty()
-  @IsString()
-  @Column()
+  @StringColumn({
+    apiPropertyOptions: { example: '/images/떡볶이/떡볶이.jpg' },
+  })
   thumbUrl: string;
 
   @ApiProperty({ example: ['떡볶이', '치즈', '매운맛'] })
@@ -52,7 +44,13 @@ export class Restaurant extends BaseEntity {
   @Column()
   deliveryFee: number;
 
-  @StringColumn({ columnOptions: { type: 'text' } })
+  @StringColumn({
+    columnOptions: { type: 'text' },
+    apiPropertyOptions: {
+      example:
+        '!!!리뷰 EVENT & 비조리 EVENT 진행중!!! @ 기본적으로 매콤합니다 @@ 덜맵게 가능하니 요청사항에 적어주세요 @@ 1인분 배달 가능합니다 @',
+    },
+  })
   detail: string;
 
   @ApiProperty({ type: () => [Product] })

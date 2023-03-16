@@ -6,9 +6,10 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
+import { uuidExample } from '../constants/common.constants';
 
 export class BaseEntity {
-  @ApiProperty({ example: 'd3c37efa-3146-40a8-a0ec-623e2c398316' })
+  @ApiProperty({ example: uuidExample })
   @IsString()
   @PrimaryGeneratedColumn('uuid')
   id: string;

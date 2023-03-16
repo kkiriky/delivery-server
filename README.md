@@ -7,6 +7,9 @@
     - 명시하지 않으면 join으로 가져오지 않았을 때, 객체에서 foregin key가 존재하지 않기 때문
   - **OneToOne Relation** : @JoinColumn()이 쓰인 쪽에서 foreign key를 갖음
   - **OneToMany & ManyToOne**: @OneToMany()는 필수 X, @ManyToOne()만 필수
+  - **find 메소드**: join할 테이블의 컬럼을 원하는대로 select할 수 없음
+    - query builder를 사용하거나,
+    - join할 컬럼을 별도로 가져와서 할당(쿼리를 한 번 더 사용)
 
 ---
 

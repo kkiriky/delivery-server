@@ -4,7 +4,8 @@ import {
 } from '@/common/dtos/pagination.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
+import { GetRestaurantDetail } from './dtos/get-restaurant-detail.dto';
 import { GetRestaurants } from './dtos/get-restaurants.dto';
 import { Restaurant } from './entities/restaurant.entity';
 import { restaurantsSelects } from './selects/restaurants.selects';
@@ -34,9 +35,9 @@ export class RestaurantsService {
     }
 
     const data = await this.restaurantRepository.find({
-      ...(lastData && { where: { createdAt: LessThan(lastData.createdAt) } }),
+      ...(lastData && { where: { createdAt: MoreThan(lastData.createdAt) } }),
       select: restaurantsSelects,
-      order: { createdAt: 'DESC' },
+      order: { createdAt: 'ASC' },
       take: limit,
     });
 
@@ -44,12 +45,45 @@ export class RestaurantsService {
       data.length === 0
         ? 0
         : await this.restaurantRepository.count({
-            where: { createdAt: LessThan(data[data.length - 1].createdAt) },
+            where: { createdAt: MoreThan(data[data.length - 1].createdAt) },
           });
 
     return {
       meta: { count: data.length, hasMore: nextCount !== 0 },
       data,
     };
+  }
+
+  async getRestaurantDetail(id: string): Promise<GetRestaurantDetail> {
+    const qb = this.restaurantRepository.createQueryBuilder('restaurant');
+
+    const restaurantDetail = await qb
+      .select([
+        'restaurant.id',
+        'restaurant.name',
+        'restaurant.thumbUrl',
+        'restaurant.tags',
+        'restaurant.ratings',
+        'restaurant.ratingsCount',
+        'restaurant.deliveryTime',
+        'restaurant.deliveryFee',
+        'restaurant.detail',
+      ])
+      .leftJoin('restaurant.products', 'product')
+      .addSelect([
+        'product.id',
+        'product.name',
+        'product.imgUrl',
+        'product.detail',
+        'product.price',
+      ])
+      .where('restaurant.id = :id', { id })
+      .getOne();
+
+    if (!restaurantDetail) {
+      throw new BadRequestException('상점이 존재하지 않습니다.');
+    }
+
+    return restaurantDetail;
   }
 }

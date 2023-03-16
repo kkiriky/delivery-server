@@ -18,5 +18,5 @@ export const StringColumn = (options?: CustomColumnOptions) =>
     options?.columnOptions ? Column({ ...options.columnOptions }) : Column(),
   );
 
-export const IntColumn = () =>
-  applyDecorators(ApiProperty(), IsInt(), Column());
+export const IntColumn = (apiPropertyOptions?: ApiPropertyOptions) =>
+  applyDecorators(ApiProperty(apiPropertyOptions), IsInt(), Column());

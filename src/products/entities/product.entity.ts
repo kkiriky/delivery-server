@@ -9,16 +9,22 @@ import { Entity, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Product extends BaseEntity {
-  @StringColumn()
+  @StringColumn({ apiPropertyOptions: { example: '떡볶이' } })
   name: string;
 
-  @StringColumn()
+  @StringColumn({ apiPropertyOptions: { example: 'images/떡볶이/떡볶이.jpg' } })
   imgUrl: string;
 
-  @StringColumn({ columnOptions: { type: 'text' } })
+  @StringColumn({
+    columnOptions: { type: 'text' },
+    apiPropertyOptions: {
+      example:
+        '전통 떡볶이의 정석! 원하는대로 맵기를 선택하고 추억의 떡볶이맛에 빠져보세요! 쫀득한 쌀떡과 말랑한 오뎅의 완벽한 조화! 잘익은 반숙 계란은 덤!',
+    },
+  })
   detail: string;
 
-  @IntColumn()
+  @IntColumn({ example: 10000 })
   price: number;
 
   @ApiProperty({ type: () => Restaurant })

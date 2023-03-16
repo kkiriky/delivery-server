@@ -1,3 +1,4 @@
+import { uuidExample } from '@/common/constants/common.constants';
 import {
   IntColumn,
   StringColumn,
@@ -30,6 +31,6 @@ export class Product extends BaseEntity {
   @ApiProperty({ type: () => Restaurant })
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.products)
   restaurant: Restaurant;
-  @StringColumn()
+  @StringColumn({ apiPropertyOptions: { example: uuidExample } })
   restaurantId: string;
 }

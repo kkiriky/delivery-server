@@ -21,7 +21,7 @@ export const typeormOptionsFactory = (
   database: configService.get('DB_NAME'),
   synchronize: configService.get('NODE_ENV') === 'development',
   logging: configService.get('NODE_ENV') === 'development',
-  timezone: '+09:00',
+  timezone: 'Z',
   charset: 'utf8mb4',
   entities: [
     User,

@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { Product } from './products/entities/product.entity';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { Product } from './products/entities/product.entity';
     UserModule,
     AuthModule,
     RestaurantsModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,10 +1,11 @@
+import { CommonService } from './../common/common.service';
 import {
   PaginatedResponse,
   PaginationQueries,
 } from '@/common/dtos/pagination.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { GetRestaurantDetail } from './dtos/get-restaurant-detail.dto';
 import { GetRestaurants } from './dtos/get-restaurants.dto';
 import { Restaurant } from './entities/restaurant.entity';
@@ -15,43 +16,19 @@ export class RestaurantsService {
   constructor(
     @InjectRepository(Restaurant)
     private readonly restaurantRepository: Repository<Restaurant>,
+    private readonly commonService: CommonService,
   ) {}
 
   async getRestaurants({
     count,
     lastId,
   }: PaginationQueries): Promise<PaginatedResponse<GetRestaurants>> {
-    const limit = count ?? 20;
-
-    let lastData: Restaurant | null = null;
-    if (lastId) {
-      lastData = await this.restaurantRepository.findOne({
-        where: { id: lastId },
-        select: { createdAt: true },
-      });
-      if (!lastData) {
-        throw new BadRequestException('잘못된 요청입니다.');
-      }
-    }
-
-    const data = await this.restaurantRepository.find({
-      ...(lastData && { where: { createdAt: MoreThan(lastData.createdAt) } }),
+    return this.commonService.pagintate({
+      count,
+      lastId,
+      repository: this.restaurantRepository,
       select: restaurantsSelects,
-      order: { createdAt: 'ASC' },
-      take: limit,
     });
-
-    const nextCount =
-      data.length === 0
-        ? 0
-        : await this.restaurantRepository.count({
-            where: { createdAt: MoreThan(data[data.length - 1].createdAt) },
-          });
-
-    return {
-      meta: { count: data.length, hasMore: nextCount !== 0 },
-      data,
-    };
   }
 
   async getRestaurantDetail(id: string): Promise<GetRestaurantDetail> {

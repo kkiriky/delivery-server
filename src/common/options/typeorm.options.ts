@@ -1,9 +1,9 @@
-import { OrderItem } from '@/order/entities/order-item.entity';
-import { Order } from '@/order/entities/order.entity';
-import { Product } from '@/product/entities/product.entity';
-import { Restaurant } from '@/restaurant/entities/restaurant.entity';
-import { ReviewImage } from '@/review/entities/review-image.entity';
-import { Review } from '@/review/entities/review.entity';
+import { OrderItem } from '@/orders/entities/order-item.entity';
+import { Order } from '@/orders/entities/order.entity';
+import { Product } from '@/products/entities/product.entity';
+import { Restaurant } from '@/restaurants/entities/restaurant.entity';
+import { ReviewImage } from '@/reviews/entities/review-image.entity';
+import { Review } from '@/reviews/entities/review.entity';
 import { BasketItem } from '@/user/entities/basket-item.entity';
 import { Basket } from '@/user/entities/basket.entity';
 import { User } from '@/user/entities/user.entity';

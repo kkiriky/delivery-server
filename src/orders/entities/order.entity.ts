@@ -1,5 +1,5 @@
 import { BaseEntity } from '@/common/entities/base.entity';
-import { Restaurant } from '@/restaurant/entities/restaurant.entity';
+import { Restaurant } from '@/restaurants/entities/restaurant.entity';
 import { User } from '@/user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsString } from 'class-validator';

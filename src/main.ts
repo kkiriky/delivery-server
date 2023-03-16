@@ -20,6 +20,7 @@ async function bootstrap() {
 
   app.set('trust proxy', 1);
 
+  // Get /images/..., GET /uploads/...
   app.useStaticAssets(path.join(process.cwd(), 'assets'));
 
   app.useGlobalPipes(

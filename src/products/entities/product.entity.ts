@@ -3,7 +3,7 @@ import {
   StringColumn,
 } from '@/common/decorators/entity-property.decorator';
 import { BaseEntity } from '@/common/entities/base.entity';
-import { Restaurant } from '@/restaurant/entities/restaurant.entity';
+import { Restaurant } from '@/restaurants/entities/restaurant.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, ManyToOne } from 'typeorm';
 

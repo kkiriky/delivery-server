@@ -1,7 +1,7 @@
 import { StringColumn } from '@/common/decorators/entity-property.decorator';
 import { BaseEntity } from '@/common/entities/base.entity';
-import { Order } from '@/order/entities/order.entity';
-import { Review } from '@/review/entities/review.entity';
+import { Order } from '@/orders/entities/order.entity';
+import { Review } from '@/reviews/entities/review.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString } from 'class-validator';
 import { Column, Entity, OneToMany } from 'typeorm';
@@ -19,7 +19,7 @@ export class User extends BaseEntity {
   })
   password: string;
 
-  @ApiProperty({ example: '/assets/images/logo/kkiri.png' })
+  @ApiProperty({ example: '/images/logo/kkiri.png' })
   @IsString()
   @Column({ nullable: true })
   imageUrl: string;

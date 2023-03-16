@@ -11,6 +11,8 @@ import { typeormOptionsFactory } from './common/options/typeorm.options';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { Restaurant } from './restaurants/entities/restaurant.entity';
+import { RestaurantsModule } from './restaurants/restaurants.module';
 
 @Module({
   imports: [
@@ -19,9 +21,10 @@ import { AuthModule } from './auth/auth.module';
       useFactory: typeormOptionsFactory,
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Restaurant]),
     UserModule,
     AuthModule,
+    RestaurantsModule,
   ],
   controllers: [AppController],
   providers: [

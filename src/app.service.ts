@@ -12,12 +12,15 @@ import { dummyReviews } from './dummy/reviews.data';
 import { Review } from './restaurant/entities/review.entity';
 import { faker } from '@faker-js/faker';
 import { ReviewImage } from './restaurant/entities/review-image.entity';
+import { Basket } from './user/entities/basket.entity';
 
 @Injectable()
 export class AppService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Basket)
+    private readonly basketRepository: Repository<Basket>,
     @InjectRepository(Restaurant)
     private readonly restaurantRepository: Repository<Restaurant>,
     @InjectRepository(Product)
@@ -38,10 +41,17 @@ export class AppService {
     // User
     if (!user) {
       const password = await bcrypt.hash('123', 12);
-      await this.userRepository.save(
+      const _user = await this.userRepository.save(
         this.userRepository.create({
           ...dummyUser,
           password,
+        }),
+      );
+
+      await this.basketRepository.save(
+        this.basketRepository.create({
+          id: _user.id,
+          userId: _user.id,
         }),
       );
     }

@@ -1,5 +1,22 @@
 # Kkiri Delivery Server
 
+### API 작업 방향
+
+1. **DB 설계 및 Entity 정의**  
+   \- Entity정의 시 Relation Property에는 Swagger와 관련된 데코레이터 작성 X  
+    => 어차피 dto정의 시 필요한 프로퍼티만 pick해서 재정의 해야하기 때문
+2. **Logger 미들웨어** 및 **Exception Filter** 등 적용
+3. **DTO 정의**: 입력(body,query,param)으로 무엇을 받고, 응답으로 무엇을 반환해야 하는지 먼저 정의
+4. **비지니스 로직 작성**: DTO를 기반으로 로직 작성
+5. **Swagger**와 **Postman**의 응답을 비교
+
+---
+
+- **Database**
+
+  - 1:1 관계의 테이블은 생성될 때, 같이 생성되어야 한다.  
+    ex) 회원 - 장바구니 => 회원 가입 시 장바구니도 동시에 생성되어야 함
+
 - **TypeOrm**
 
   - relation key: foreign key
@@ -15,8 +32,6 @@
   - **MySql에서는 1us의 단위**로 시간을 갖음. 그러나 이를 **자바스크립트의 Date객체는 1ms단위**를 갖기 때문에 **시간의 오차가 존재**함.  
     따라서 Ascending Order로 정렬한 후 More Than(Greater Than)으로 데이터를 가져오려고 하면 자신의 데이터를 포함하는 이슈가 생김.  
     Descending Order로 정렬하더라도 0.1ms 미만의 차이가 난다면 문제가 발생할 수 있음.
-  - Entity정의 시 Relation Property에는 Swagger와 관련된 데코레이터 작성 X  
-    => 어차피 dto정의 시 필요한 프로퍼티만 pick해서 재정의 해야하기 때문
 
 ---
 

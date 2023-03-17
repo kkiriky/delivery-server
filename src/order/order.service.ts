@@ -44,6 +44,11 @@ export class OrderService {
     });
   }
 
+  // 장바구니 주문을 별도로 만들자
+  createOrderFromBaskets() {
+    //
+  }
+
   async createOrder({
     products,
     userId,
@@ -59,7 +64,7 @@ export class OrderService {
       let totalCount = 0;
       for (const $product of products) {
         const product = await manager.findOne(Product, {
-          where: { id: $product.id },
+          where: { id: $product.productId },
           select: {
             id: true,
             price: true,
@@ -84,7 +89,7 @@ export class OrderService {
       const orderItems = products.map((product) =>
         manager.create(OrderItem, {
           count: product.count,
-          productId: product.id,
+          productId: product.productId,
           orderId: order.id,
         }),
       );
@@ -103,9 +108,7 @@ export class OrderService {
         },
       });
       if (!orderWithItems) {
-        throw new InternalServerErrorException(
-          '서버 문제로 인해 처리되지 않았습니다.',
-        );
+        throw new InternalServerErrorException();
       }
       await queryRunner.commitTransaction();
 

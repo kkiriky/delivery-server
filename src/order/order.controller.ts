@@ -18,6 +18,7 @@ import { OrderDto } from './dtos/get-orders.dto';
 import { CreateOrderProduct } from './dtos/create-order.dto';
 
 @ApiTags('Order')
+@ApiHeaderBearer()
 @UseGuards(AuthGuard)
 @Controller('order')
 export class OrderController {
@@ -25,7 +26,6 @@ export class OrderController {
 
   @ApiOperation({ summary: '주문 목록' })
   @ApiOkPaginatedResponse(OrderDto)
-  @ApiHeaderBearer()
   @Get()
   getOrders(
     @Query() { count, lastId }: PaginationQueries,
@@ -36,7 +36,6 @@ export class OrderController {
 
   @ApiOperation({ summary: '주문 생성' })
   @ApiCreatedResponse({ type: OrderDto })
-  @ApiHeaderBearer()
   @ApiBody({ type: [CreateOrderProduct] })
   @Post()
   createOrder(

@@ -1,12 +1,11 @@
 import { countExample, uuidExample } from '@/common/constants/common.constants';
+import { StringInput } from '@/common/decorators/input-property.decorator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt } from 'class-validator';
 
 export class CreateOrderProduct {
-  @ApiProperty({ example: uuidExample })
-  @IsNotEmpty()
-  @IsString()
-  id: string;
+  @StringInput({ example: uuidExample })
+  productId: string;
 
   @ApiProperty({ example: countExample })
   @IsInt()

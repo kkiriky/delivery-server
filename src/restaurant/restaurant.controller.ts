@@ -14,6 +14,7 @@ import { GetReviews } from './dtos/get-reviews.dto';
 import { RestaurantService } from './restaurant.service';
 
 @ApiTags('Restaurant')
+@ApiHeaderBearer()
 @UseGuards(AuthGuard)
 @Controller('restaurant')
 export class RestaurantController {
@@ -21,7 +22,6 @@ export class RestaurantController {
 
   @ApiOperation({ summary: '상점 목록' })
   @ApiOkPaginatedResponse(GetRestaurants)
-  @ApiHeaderBearer()
   @Get()
   getRestaurants(
     @Query() paginationQueries: PaginationQueries,
@@ -31,7 +31,6 @@ export class RestaurantController {
 
   @ApiOperation({ summary: '상점 상세보기' })
   @ApiOkResponse({ type: GetRestaurantDetail })
-  @ApiHeaderBearer()
   @Get(':id')
   getRestaurantDetail(@Param() { id }: IdParam) {
     return this.restaurantService.getRestaurantDetail(id);
@@ -39,7 +38,6 @@ export class RestaurantController {
 
   @ApiOperation({ summary: '리뷰 목록' })
   @ApiOkPaginatedResponse(GetReviews)
-  @ApiHeaderBearer()
   @Get(':id/review')
   getReviews(
     @Param() { id }: IdParam,

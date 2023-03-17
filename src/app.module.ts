@@ -18,6 +18,7 @@ import { ProductModule } from './product/product.module';
 import { Review } from './restaurant/entities/review.entity';
 import { ReviewImage } from './restaurant/entities/review-image.entity';
 import { OrderModule } from './order/order.module';
+import { Basket } from './user/entities/basket.entity';
 
 @Module({
   imports: [
@@ -26,7 +27,14 @@ import { OrderModule } from './order/order.module';
       useFactory: typeormOptionsFactory,
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Restaurant, Product, Review, ReviewImage]),
+    TypeOrmModule.forFeature([
+      User,
+      Basket,
+      Restaurant,
+      Product,
+      Review,
+      ReviewImage,
+    ]),
     UserModule,
     AuthModule,
     RestaurantModule,

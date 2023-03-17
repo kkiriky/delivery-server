@@ -1,6 +1,6 @@
 import { User } from '@/user/entities/user.entity';
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { tokenExample } from '../constants/auth.constants';
+import { tokenExample } from '@/common/constants/common.constants';
 
 export class LoginBody extends PickType(User, ['email', 'password']) {}
 

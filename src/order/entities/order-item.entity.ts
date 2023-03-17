@@ -1,32 +1,25 @@
+import { countExample, uuidExample } from '@/common/constants/common.constants';
+import {
+  IntColumn,
+  StringColumn,
+} from '@/common/decorators/entity-property.decorator';
 import { BaseEntity } from '@/common/entities/base.entity';
 import { Product } from '@/product/entities/product.entity';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Entity, ManyToOne } from 'typeorm';
 import { Order } from './order.entity';
 
 @Entity()
 export class OrderItem extends BaseEntity {
-  @ApiProperty()
-  @IsInt()
-  @Column()
+  @IntColumn({ apiPropertyOptions: { example: countExample } })
   count: number;
 
-  @ApiProperty({ type: () => Order })
   @ManyToOne(() => Order, (order) => order.orderItems)
   order: Order;
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @Column()
+  @StringColumn({ apiPropertyOptions: { example: uuidExample } })
   orderId: string;
 
-  @ApiProperty({ type: () => Product })
   @ManyToOne(() => Product)
   product: Product;
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @Column()
+  @StringColumn({ apiPropertyOptions: { example: uuidExample } })
   productId: string;
 }

@@ -1,17 +1,18 @@
-import { StringColumn } from '@/common/decorators/entity-property.decorator';
+import {
+  IntColumn,
+  StringColumn,
+} from '@/common/decorators/entity-property.decorator';
 import { BaseEntity } from '@/common/entities/base.entity';
 import { Order } from '@/order/entities/order.entity';
 import { Product } from '@/product/entities/product.entity';
-import { Review } from '@/review/entities/review.entity';
+import { Review } from '@/restaurant/entities/review.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsInt, IsNumber } from 'class-validator';
+import { IsArray, IsNumber } from 'class-validator';
 import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 
 @Entity()
 export class Restaurant extends BaseEntity {
-  @StringColumn({
-    apiPropertyOptions: { example: '불타는 떡볶이' },
-  })
+  @StringColumn({ apiPropertyOptions: { example: '불타는 떡볶이' } })
   name: string;
 
   @StringColumn({
@@ -29,19 +30,13 @@ export class Restaurant extends BaseEntity {
   @Column({ type: 'double' })
   ratings: number;
 
-  @ApiProperty({ example: 200 })
-  @IsInt()
-  @Column()
+  @IntColumn({ apiPropertyOptions: { example: 200 } })
   ratingsCount: number;
 
-  @ApiProperty({ example: 20 })
-  @IsInt()
-  @Column()
+  @IntColumn({ apiPropertyOptions: { example: 20 } })
   deliveryTime: number;
 
-  @ApiProperty({ example: 2500 })
-  @IsInt()
-  @Column()
+  @IntColumn({ apiPropertyOptions: { example: 2500 } })
   deliveryFee: number;
 
   @StringColumn({
@@ -53,15 +48,12 @@ export class Restaurant extends BaseEntity {
   })
   detail: string;
 
-  @ApiProperty({ type: () => [Product] })
   @OneToMany(() => Product, (product) => product.restaurant)
   products: Product[];
 
-  @ApiProperty({ type: () => [Review] })
   @OneToMany(() => Review, (review) => review.restaurant)
   reviews: Review[];
 
-  @ApiProperty({ type: () => [Order] })
   @ManyToMany(() => Order)
   orders: Order[];
 }

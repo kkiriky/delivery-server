@@ -7,15 +7,12 @@ export class GetRestaurantDetail extends OmitType(Restaurant, [
   'updatedAt',
   'deletedAt',
   'products',
-  'reviews',
-  'orders',
 ]) {
   @ApiProperty({ type: () => [RestaurantProduct] })
   products: RestaurantProduct[];
 }
 
 class RestaurantProduct extends OmitType(Product, [
-  'restaurant',
   'restaurantId',
   'createdAt',
   'updatedAt',

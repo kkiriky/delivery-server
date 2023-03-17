@@ -7,6 +7,4 @@ export class GetRestaurants extends OmitType(Restaurant, [
   'deletedAt',
   'detail',
   'products',
-  'reviews',
-  'orders',
 ]) {}

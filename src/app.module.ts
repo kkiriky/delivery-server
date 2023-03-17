@@ -15,6 +15,8 @@ import { Restaurant } from './restaurant/entities/restaurant.entity';
 import { RestaurantModule } from './restaurant/restaurant.module';
 import { Product } from './product/entities/product.entity';
 import { ProductModule } from './product/product.module';
+import { Review } from './restaurant/entities/review.entity';
+import { ReviewImage } from './restaurant/entities/review-image.entity';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { ProductModule } from './product/product.module';
       useFactory: typeormOptionsFactory,
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Restaurant, Product]),
+    TypeOrmModule.forFeature([User, Restaurant, Product, Review, ReviewImage]),
     UserModule,
     AuthModule,
     RestaurantModule,

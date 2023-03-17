@@ -11,19 +11,21 @@ import { paginateParams } from './types/common.types';
 
 @Injectable()
 export class CommonService {
-  async pagintate<T extends BaseEntity>({
+  async pagintate<TData extends BaseEntity>({
     count,
     lastId,
     repository,
     select,
-  }: paginateParams<T>): Promise<PaginatedResponse<T>> {
+    addWhere,
+    relations,
+  }: paginateParams<TData>): Promise<PaginatedResponse<TData>> {
     const limit = count ?? 20;
 
-    let lastData: T | null = null;
+    let lastData: TData | null = null;
     if (lastId) {
       lastData = await repository.findOne({
-        where: { id: lastId } as FindOptionsWhere<T>,
-        select: { createdAt: true } as FindOptionsSelect<T>,
+        where: { id: lastId } as FindOptionsWhere<TData>,
+        select: { createdAt: true } as FindOptionsSelect<TData>,
       });
       if (!lastData) {
         throw new BadRequestException('잘못된 요청입니다.');
@@ -33,11 +35,13 @@ export class CommonService {
     const data = await repository.find({
       ...(lastData && {
         where: {
+          ...addWhere,
           createdAt: LessThan(lastData.createdAt),
-        } as FindOptionsWhere<T>,
+        } as FindOptionsWhere<TData>,
       }),
       select,
-      order: { createdAt: 'DESC' } as FindOptionsOrder<T>,
+      ...(relations && { relations }),
+      order: { createdAt: 'DESC' } as FindOptionsOrder<TData>,
       take: limit,
     });
 
@@ -47,7 +51,7 @@ export class CommonService {
         : await repository.count({
             where: {
               createdAt: LessThan(data[data.length - 1].createdAt),
-            } as FindOptionsWhere<T>,
+            } as FindOptionsWhere<TData>,
           });
 
     return {

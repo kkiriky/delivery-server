@@ -1,43 +1,33 @@
+import { uuidExample } from '@/common/constants/common.constants';
+import {
+  IntColumn,
+  StringColumn,
+} from '@/common/decorators/entity-property.decorator';
 import { BaseEntity } from '@/common/entities/base.entity';
 import { Restaurant } from '@/restaurant/entities/restaurant.entity';
 import { User } from '@/user/entities/user.entity';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, ManyToOne, OneToMany } from 'typeorm';
 import { ReviewImage } from './review-image.entity';
 
 @Entity()
 export class Review extends BaseEntity {
-  @ApiProperty()
-  @IsInt()
-  @Column({ type: 'text' })
+  @IntColumn({ columnOptions: { type: 'text' } })
   rating: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @Column({ type: 'text' })
+  @StringColumn({ columnOptions: { type: 'text' } })
   content: string;
 
-  @ApiProperty({ type: () => Restaurant })
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.reviews)
   restaurant: Restaurant;
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @Column()
+
+  @StringColumn({ apiPropertyOptions: { example: uuidExample } })
   restaurantId: string;
 
-  @ApiProperty({ type: () => User })
   @ManyToOne(() => User, (user) => user.reviews)
   user: User;
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @Column()
+  @StringColumn({ apiPropertyOptions: { example: uuidExample } })
   userId: string;
 
-  @ApiProperty({ type: () => [ReviewImage] })
   @OneToMany(() => ReviewImage, (image) => image.review)
   images: ReviewImage[];
 }

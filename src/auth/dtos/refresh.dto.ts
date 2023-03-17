@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { tokenExample } from '../constants/auth.constants';
+import { tokenExample } from '@/common/constants/common.constants';
 
 export class RefreshResponse {
   @ApiProperty({ example: tokenExample })

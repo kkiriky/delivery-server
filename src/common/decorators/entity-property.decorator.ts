@@ -8,15 +8,29 @@ interface CustomColumnOptions {
   columnOptions?: ColumnOptions;
 }
 
+const createApiProperty = (
+  apiPropertyOptions: ApiPropertyOptions | undefined,
+) => {
+  return apiPropertyOptions
+    ? ApiProperty({ ...apiPropertyOptions })
+    : ApiProperty();
+};
+
+const createColumn = (columnOptions: ColumnOptions | undefined) => {
+  return columnOptions ? Column({ ...columnOptions }) : Column();
+};
+
 export const StringColumn = (options?: CustomColumnOptions) =>
   applyDecorators(
-    options?.apiPropertyOptions
-      ? ApiProperty({ ...options.apiPropertyOptions })
-      : ApiProperty(),
+    createApiProperty(options?.apiPropertyOptions),
     IsNotEmpty(),
     IsString(),
-    options?.columnOptions ? Column({ ...options.columnOptions }) : Column(),
+    createColumn(options?.columnOptions),
   );
 
-export const IntColumn = (apiPropertyOptions?: ApiPropertyOptions) =>
-  applyDecorators(ApiProperty(apiPropertyOptions), IsInt(), Column());
+export const IntColumn = (options?: CustomColumnOptions) =>
+  applyDecorators(
+    createApiProperty(options?.apiPropertyOptions),
+    IsInt(),
+    createColumn(options?.columnOptions),
+  );

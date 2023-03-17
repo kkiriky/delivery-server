@@ -10,12 +10,18 @@ import { GetRestaurantDetail } from './dtos/get-restaurant-detail.dto';
 import { GetRestaurants } from './dtos/get-restaurants.dto';
 import { Restaurant } from './entities/restaurant.entity';
 import { restaurantsSelects } from './selects/restaurants.selects';
+import { Review } from './entities/review.entity';
+import { reviewsSelects } from './selects/reviews.selects';
+import { GetReviews, GetReviewsParams } from './dtos/get-reviews.dto';
+import { restaurantProductsSelects } from '@/product/selects/products.select';
 
 @Injectable()
 export class RestaurantService {
   constructor(
     @InjectRepository(Restaurant)
     private readonly restaurantRepository: Repository<Restaurant>,
+    @InjectRepository(Review)
+    private readonly reviewRepository: Repository<Review>,
     private readonly commonService: CommonService,
   ) {}
 
@@ -32,35 +38,41 @@ export class RestaurantService {
   }
 
   async getRestaurantDetail(rid: string): Promise<GetRestaurantDetail> {
-    const qb = this.restaurantRepository.createQueryBuilder('restaurant');
-
-    const restaurantDetail = await qb
-      .select([
-        'restaurant.id',
-        'restaurant.name',
-        'restaurant.thumbUrl',
-        'restaurant.tags',
-        'restaurant.ratings',
-        'restaurant.ratingsCount',
-        'restaurant.deliveryTime',
-        'restaurant.deliveryFee',
-        'restaurant.detail',
-      ])
-      .leftJoin('restaurant.products', 'product')
-      .addSelect([
-        'product.id',
-        'product.name',
-        'product.imgUrl',
-        'product.detail',
-        'product.price',
-      ])
-      .where('restaurant.id = :rid', { rid })
-      .getOne();
+    const restaurantDetail = await this.restaurantRepository.findOne({
+      where: { id: rid },
+      select: {
+        ...restaurantsSelects,
+        createdAt: false,
+        detail: true,
+        products: restaurantProductsSelects,
+      },
+      relations: {
+        products: true,
+      },
+    });
 
     if (!restaurantDetail) {
       throw new BadRequestException('상점이 존재하지 않습니다.');
     }
 
     return restaurantDetail;
+  }
+
+  async getReviews({
+    count,
+    lastId,
+    restaurantId,
+  }: GetReviewsParams): Promise<PaginatedResponse<GetReviews>> {
+    return this.commonService.pagintate({
+      count,
+      lastId,
+      repository: this.reviewRepository,
+      select: reviewsSelects,
+      addWhere: { restaurantId },
+      relations: {
+        user: true,
+        images: true,
+      },
+    });
   }
 }

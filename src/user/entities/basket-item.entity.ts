@@ -1,5 +1,5 @@
 import { BaseEntity } from '@/common/entities/base.entity';
-import { Product } from '@/products/entities/product.entity';
+import { Product } from '@/product/entities/product.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsString, IsNotEmpty } from 'class-validator';
 import { Column, Entity, ManyToOne } from 'typeorm';

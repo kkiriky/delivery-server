@@ -3,11 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user/entities/user.entity';
 import bcrypt from 'bcrypt';
-import { Restaurant } from './restaurants/entities/restaurant.entity';
+import { Restaurant } from './restaurant/entities/restaurant.entity';
 import { dummyUser } from './dummy/user.data';
 import { dummyRestaurants } from './dummy/restaurants.data';
 import { dummyProductCategories } from './dummy/products.data';
-import { Product } from './products/entities/product.entity';
+import { Product } from './product/entities/product.entity';
 
 @Injectable()
 export class AppService {

@@ -11,10 +11,10 @@ import { typeormOptionsFactory } from './common/options/typeorm.options';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { Restaurant } from './restaurants/entities/restaurant.entity';
-import { RestaurantsModule } from './restaurants/restaurants.module';
-import { Product } from './products/entities/product.entity';
-import { ProductsModule } from './products/products.module';
+import { Restaurant } from './restaurant/entities/restaurant.entity';
+import { RestaurantModule } from './restaurant/restaurant.module';
+import { Product } from './product/entities/product.entity';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -26,8 +26,8 @@ import { ProductsModule } from './products/products.module';
     TypeOrmModule.forFeature([User, Restaurant, Product]),
     UserModule,
     AuthModule,
-    RestaurantsModule,
-    ProductsModule,
+    RestaurantModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [

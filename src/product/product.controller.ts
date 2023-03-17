@@ -7,12 +7,12 @@ import {
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetProducts } from './dtos/get-products.dto';
-import { ProductsService } from './products.service';
+import { ProductService } from './product.service';
 
-@ApiTags('Products')
-@Controller('products')
-export class ProductsController {
-  constructor(private readonly productService: ProductsService) {}
+@ApiTags('Product')
+@Controller('product')
+export class ProductController {
+  constructor(private readonly productService: ProductService) {}
 
   @ApiOperation({ summary: '상품 목록' })
   @ApiOkPaginatedResponse(GetProducts)

@@ -1,4 +1,4 @@
-import { Product } from '@/products/entities/product.entity';
+import { Product } from '@/product/entities/product.entity';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Restaurant } from '../entities/restaurant.entity';
 

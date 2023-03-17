@@ -7,12 +7,12 @@ import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetRestaurantDetail } from './dtos/get-restaurant-detail.dto';
 import { GetRestaurants } from './dtos/get-restaurants.dto';
-import { RestaurantsService } from './restaurants.service';
+import { RestaurantService } from './restaurant.service';
 
-@ApiTags('Restaurants')
-@Controller('restaurants')
-export class RestaurantsController {
-  constructor(private readonly restaurantService: RestaurantsService) {}
+@ApiTags('Restaurant')
+@Controller('restaurant')
+export class RestaurantController {
+  constructor(private readonly restaurantService: RestaurantService) {}
 
   @ApiOperation({ summary: '상점 목록' })
   @ApiOkPaginatedResponse(GetRestaurants)

@@ -1,4 +1,4 @@
-import { CommonService } from './../common/common.service';
+import { CommonService } from '../common/common.service';
 import {
   PaginatedResponse,
   PaginationQueries,
@@ -12,7 +12,7 @@ import { Restaurant } from './entities/restaurant.entity';
 import { restaurantsSelects } from './selects/restaurants.selects';
 
 @Injectable()
-export class RestaurantsService {
+export class RestaurantService {
   constructor(
     @InjectRepository(Restaurant)
     private readonly restaurantRepository: Repository<Restaurant>,
@@ -31,7 +31,7 @@ export class RestaurantsService {
     });
   }
 
-  async getRestaurantDetail(id: string): Promise<GetRestaurantDetail> {
+  async getRestaurantDetail(rid: string): Promise<GetRestaurantDetail> {
     const qb = this.restaurantRepository.createQueryBuilder('restaurant');
 
     const restaurantDetail = await qb
@@ -54,7 +54,7 @@ export class RestaurantsService {
         'product.detail',
         'product.price',
       ])
-      .where('restaurant.id = :id', { id })
+      .where('restaurant.id = :rid', { rid })
       .getOne();
 
     if (!restaurantDetail) {

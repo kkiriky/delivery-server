@@ -11,7 +11,7 @@ import { productsSelects } from './selects/products.select';
 import { CommonService } from '@/common/common.service';
 
 @Injectable()
-export class ProductsService {
+export class ProductService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,

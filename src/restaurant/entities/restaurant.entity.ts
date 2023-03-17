@@ -1,8 +1,8 @@
 import { StringColumn } from '@/common/decorators/entity-property.decorator';
 import { BaseEntity } from '@/common/entities/base.entity';
-import { Order } from '@/orders/entities/order.entity';
-import { Product } from '@/products/entities/product.entity';
-import { Review } from '@/reviews/entities/review.entity';
+import { Order } from '@/order/entities/order.entity';
+import { Product } from '@/product/entities/product.entity';
+import { Review } from '@/review/entities/review.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsInt, IsNumber } from 'class-validator';
 import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';

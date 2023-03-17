@@ -29,3 +29,8 @@ export class PaginationMeta {
   @ApiProperty({ example: true })
   hasMore: boolean;
 }
+
+export interface IPaginationQueries {
+  count?: number;
+  lastId?: string;
+}

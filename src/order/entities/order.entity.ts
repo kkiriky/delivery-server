@@ -1,4 +1,8 @@
-import { priceExample, uuidExample } from '@/common/constants/common.constants';
+import {
+  countExample,
+  priceExample,
+  uuidExample,
+} from '@/common/constants/common.constants';
 import {
   IntColumn,
   StringColumn,
@@ -13,6 +17,9 @@ import { OrderItem } from './order-item.entity';
 export class Order extends BaseEntity {
   @IntColumn({ apiPropertyOptions: { example: priceExample } })
   totalPrice: number;
+
+  @IntColumn({ apiPropertyOptions: { example: countExample } })
+  totalCount: number;
 
   @OneToMany(() => User, (user) => user.orders)
   user: User;

@@ -2,10 +2,9 @@ import { User } from '@/user/entities/user.entity';
 import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
 import { ReviewImage } from '../entities/review-image.entity';
 import { Review } from '../entities/review.entity';
+import { IPaginationQueries } from '@/common/dtos/pagination.dto';
 
-export interface GetReviewsParams {
-  count?: number;
-  lastId?: string;
+export interface GetReviewsParams extends IPaginationQueries {
   restaurantId: string;
 }
 

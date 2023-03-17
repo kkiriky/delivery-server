@@ -17,6 +17,7 @@ import { Product } from './product/entities/product.entity';
 import { ProductModule } from './product/product.module';
 import { Review } from './restaurant/entities/review.entity';
 import { ReviewImage } from './restaurant/entities/review-image.entity';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ReviewImage } from './restaurant/entities/review-image.entity';
     AuthModule,
     RestaurantModule,
     ProductModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [

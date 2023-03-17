@@ -34,7 +34,7 @@ export class AppService {
       select: { id: true },
     });
 
-    // if (user) return 'Already Initialized';
+    if (user) return 'Already Initialized';
     // User
     if (!user) {
       const password = await bcrypt.hash('123', 12);
@@ -85,14 +85,15 @@ export class AppService {
       // save에서 반환하는 레스토랑 아이디는 중복된 uuid를 반환하기 때문에 DB에서 새로 가져옴(12개씩 중복됨)
       const restaurants = await this.restaurantRepository.find({
         select: { id: true },
-        order: { createdAt: 'DESC' },
+        order: { createdAt: 'ASC' },
       });
 
       // Products, Reviews
       for (const [i, restaurant] of restaurants.entries()) {
         // Products
-        const dummyProducts =
-          dummyProductCategories[i % dummyProductCategories.length];
+        const dummyProducts = [...dummyProductCategories].reverse()[
+          i % dummyProductCategories.length
+        ];
 
         const productInstances = dummyProducts.map((dummy) => {
           const productInstance = this.productRepository.create({

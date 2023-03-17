@@ -30,3 +30,4 @@
       - **allOf**: 모든 하위 스키마에 대해 값의 유효성을 검사합니다.  
         다양한 상속 관련 사용 사례를 다루기 위해 OAS 3에서 제공하는 개념
     - **@getSchemaPath**: 모델을 참조하기 위함
+    - **@ApiBody**: body 타입 지정(Method Decorator)

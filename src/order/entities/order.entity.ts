@@ -26,10 +26,10 @@ export class Order extends BaseEntity {
   @StringColumn({ apiPropertyOptions: { example: uuidExample } })
   userId: string;
 
-  @JoinTable({ name: 'order_restaurants' })
-  @ManyToMany(() => Restaurant)
-  restaurants: Restaurant[];
-
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
   orderItems: OrderItem[];
+
+  @JoinTable({ name: 'restaurant_order' })
+  @ManyToMany(() => Restaurant)
+  restaurants: Restaurant[];
 }

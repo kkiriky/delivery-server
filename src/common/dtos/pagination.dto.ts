@@ -3,7 +3,7 @@ import { IsInt, IsOptional, IsString } from 'class-validator';
 import { uuidExample } from '../constants/common.constants';
 
 export class PaginationQueries {
-  @ApiProperty({ example: 20, required: false })
+  @ApiProperty({ required: false, default: 20 })
   @IsOptional()
   @IsInt()
   count?: number;

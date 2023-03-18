@@ -15,4 +15,8 @@ export const ordersSelects: FindOptionsSelect<Order> = {
       imgUrl: true,
     },
   },
+  restaurants: {
+    id: true,
+    name: true,
+  },
 };

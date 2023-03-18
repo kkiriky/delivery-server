@@ -1,4 +1,5 @@
 import { OrderItem } from '@/order/entities/order-item.entity';
+import { RestaurantToOrder } from '@/restaurant/entities/restaurant-order.entity';
 import { Order } from '@/order/entities/order.entity';
 import { Product } from '@/product/entities/product.entity';
 import { Restaurant } from '@/restaurant/entities/restaurant.entity';
@@ -33,5 +34,6 @@ export const typeormOptionsFactory = (
     OrderItem,
     Review,
     ReviewImage,
+    RestaurantToOrder,
   ],
 });

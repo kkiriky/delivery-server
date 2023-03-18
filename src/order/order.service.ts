@@ -11,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { OrderDto } from './dtos/get-orders.dto';
 import { OrderItem } from './entities/order-item.entity';
+import { RestaurantToOrder } from '../restaurant/entities/restaurant-order.entity';
 import { Order } from './entities/order.entity';
 import { ordersSelects } from './selects/orders.selects';
 import { GetOrdersParams } from './types/order.types';
@@ -41,6 +42,7 @@ export class OrderService {
         orderItems: {
           product: true,
         },
+        restaurants: true,
       },
     });
   }
@@ -68,11 +70,19 @@ export class OrderService {
 
       let totalCount = 0;
       let totalPrice = 0;
+      const restaurantIds: string[] = [];
       for (const basketItem of basketItems) {
         totalPrice +=
           basketItem.product.price * basketItem.count +
           basketItem.product.restaurant.deliveryFee;
         totalCount += basketItem.count;
+
+        const isExist = restaurantIds.find(
+          (rid) => rid === basketItem.product.restaurant.id,
+        );
+        if (!isExist) {
+          restaurantIds.push(basketItem.product.restaurant.id);
+        }
       }
 
       // order item은 foreign key로 orderId를 가지므로  order 먼저 생성
@@ -83,6 +93,7 @@ export class OrderService {
           userId,
         }),
       );
+
       // 생성된 order의 id값을 이용하여 order item 생성
       const orderItems = basketItems.map((basketItem) =>
         manager.create(OrderItem, {
@@ -92,6 +103,12 @@ export class OrderService {
         }),
       );
       await manager.save(orderItems);
+
+      // 주문과 상점의 m:n관계 맵핑
+      const restaurantToOrderInstances = restaurantIds.map((restaurantId) =>
+        manager.create(RestaurantToOrder, { orderId: order.id, restaurantId }),
+      );
+      await manager.save(RestaurantToOrder, restaurantToOrderInstances);
 
       // 장바구니 비우기
       await manager.delete(BasketItem, { basketId: userId });

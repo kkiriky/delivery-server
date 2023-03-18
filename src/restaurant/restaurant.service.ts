@@ -12,8 +12,9 @@ import { Restaurant } from './entities/restaurant.entity';
 import { restaurantsSelects } from './selects/restaurants.selects';
 import { Review } from './entities/review.entity';
 import { reviewsSelects } from './selects/reviews.selects';
-import { GetReviews, GetReviewsParams } from './dtos/get-reviews.dto';
+import { GetReviews } from './dtos/get-reviews.dto';
 import { restaurantProductsSelects } from '@/product/selects/products.select';
+import { GetReviewsParams } from './types/restaurant.types';
 
 @Injectable()
 export class RestaurantService {
@@ -37,9 +38,9 @@ export class RestaurantService {
     });
   }
 
-  async getRestaurantDetail(rid: string): Promise<GetRestaurantDetail> {
+  async getRestaurantDetail(id: string): Promise<GetRestaurantDetail> {
     const restaurantDetail = await this.restaurantRepository.findOne({
-      where: { id: rid },
+      where: { id },
       select: {
         ...restaurantsSelects,
         createdAt: false,

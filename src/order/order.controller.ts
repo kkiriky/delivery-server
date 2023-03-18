@@ -1,5 +1,5 @@
 import { OrderService } from './order.service';
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import {
   PaginatedResponse,
   PaginationQueries,
@@ -38,10 +38,7 @@ export class OrderController {
   @ApiCreatedResponse({ type: OrderDto })
   @ApiBody({ type: [CreateOrderProduct] })
   @Post()
-  createOrder(
-    @Body() products: CreateOrderProduct[],
-    @UserId() userId: string,
-  ): Promise<OrderDto> {
-    return this.orderService.createOrder({ products, userId });
+  createOrderFromBasket(@UserId() userId: string): Promise<OrderDto> {
+    return this.orderService.createOrderFromBasket(userId);
   }
 }

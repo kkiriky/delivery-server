@@ -11,6 +11,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { isJwtError, isJwtPayload } from './types/jwt.types';
+import { RefreshResponse } from './dtos/refresh.dto';
 
 @Injectable()
 export class AuthService {
@@ -40,7 +41,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async refresh(authorization: string | undefined) {
+  async refresh(authorization: string | undefined): Promise<RefreshResponse> {
     const refreshToken = authorization?.split(' ')[1];
     if (!refreshToken) {
       throw new UnauthorizedException('토큰이 존재하지 않습니다.');

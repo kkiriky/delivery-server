@@ -11,8 +11,3 @@ export class CreateOrderProduct {
   @IsInt()
   count: number;
 }
-
-export interface CreateOrderParams {
-  products: CreateOrderProduct[];
-  userId: string;
-}

@@ -22,7 +22,7 @@ export class PatchBasketBody {
   productId: string;
 }
 
-export interface UpdateBasketParams {
-  basketId: string;
-  productId: string;
+export class BasketItemIdParam {
+  @StringInput({ example: uuidExample })
+  basketItemId: string;
 }

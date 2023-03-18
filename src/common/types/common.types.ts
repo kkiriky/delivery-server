@@ -12,6 +12,11 @@ export interface CustomRequest extends Request {
   userId: string;
 }
 
+export interface IPaginationQueries {
+  count?: number;
+  lastId?: string;
+}
+
 export class paginateParams<T extends BaseEntity> extends PaginationQueries {
   repository: Repository<T>;
   select: FindOptionsSelect<T>;

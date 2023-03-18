@@ -5,10 +5,16 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { BasketItemDto, UpdateBasketParams } from './dtos/basket.dto';
+import { BasketItemDto } from './dtos/basket.dto';
 import { BasketItem } from './entities/basket-item.entity';
 import { User } from './entities/user.entity';
 import { basketItemsSelects } from './selects/basketItems.selects';
+import {
+  DeleteFromBasketParams,
+  FindBasketItemJoinedProductParams,
+  FindBasketItemParams,
+  UpdateBasketParams,
+} from './types/user.types';
 
 @Injectable()
 export class UserService {
@@ -21,7 +27,7 @@ export class UserService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async getMe(id: string) {
+  async getMe(id: string): Promise<User> {
     const user = await this.userRepository.findOneOrFail({
       where: { id },
       select: {
@@ -34,9 +40,9 @@ export class UserService {
     return user;
   }
 
-  async getBasket(userId: string): Promise<BasketItemDto[]> {
+  async getBasket(basketId: string): Promise<BasketItemDto[]> {
     const basketItems = await this.basketItemRepository.find({
-      where: { basketId: userId },
+      where: { basketId },
       select: basketItemsSelects,
       relations: {
         product: true,
@@ -57,12 +63,10 @@ export class UserService {
       await queryRunner.startTransaction();
       const { manager } = queryRunner;
 
-      let basketItem = await manager.findOne(BasketItem, {
-        where: { basketId, productId },
-        select: {
-          id: true,
-          count: true,
-        },
+      let basketItem = await this.findBasketItem({
+        manager,
+        basketId,
+        productId,
       });
 
       if (!basketItem) {
@@ -83,19 +87,15 @@ export class UserService {
         );
       }
 
-      const basketItemWithProduct = await manager.findOne(BasketItem, {
-        where: { id: basketItem.id },
-        select: basketItemsSelects,
-        relations: {
-          product: true,
-        },
+      const basketItemJoinedProduct = await this.findBaksetItemJoinedProduct({
+        manager,
+        id: basketItem.id,
       });
-      if (!basketItemWithProduct) {
-        throw new InternalServerErrorException();
-      }
+      if (!basketItemJoinedProduct) throw new InternalServerErrorException();
+
       await queryRunner.commitTransaction();
 
-      return basketItemWithProduct;
+      return basketItemJoinedProduct;
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;
@@ -115,14 +115,12 @@ export class UserService {
       await queryRunner.startTransaction();
       const { manager } = queryRunner;
 
-      // 중복
-      const basketItem = await manager.findOne(BasketItem, {
-        where: { basketId, productId },
-        select: {
-          id: true,
-          count: true,
-        },
+      const basketItem = await this.findBasketItem({
+        manager,
+        basketId,
+        productId,
       });
+
       if (!basketItem) {
         throw new BadRequestException(
           '장바구니에 해당 상품이 존재하지 않습니다.',
@@ -139,23 +137,81 @@ export class UserService {
         );
       }
 
-      // 중복
-      const basketItemWithProduct = await manager.findOne(BasketItem, {
-        where: { id: basketItem.id },
-        select: basketItemsSelects,
-        relations: {
-          product: true,
-        },
+      const basketItemJoinedProduct = await this.findBaksetItemJoinedProduct({
+        manager,
+        id: basketItem.id,
       });
 
       await queryRunner.commitTransaction();
 
-      return basketItemWithProduct;
+      return basketItemJoinedProduct;
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async deleteFromBasket({
+    basketId,
+    basketItemId,
+  }: DeleteFromBasketParams): Promise<string> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+
+    try {
+      await queryRunner.startTransaction();
+      const { manager } = queryRunner;
+
+      const basketItem = await manager.findOne(BasketItem, {
+        where: { id: basketItemId, basketId },
+        select: {
+          id: true,
+          basketId: true,
+        },
+      });
+      if (!basketItem) {
+        throw new BadRequestException('장바구니에 상품이 존재하지 않습니다.');
+      }
+
+      await manager.delete(BasketItem, { id: basketItemId });
+
+      await queryRunner.commitTransaction();
+
+      return 'ok';
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  private async findBasketItem({
+    manager,
+    basketId,
+    productId,
+  }: FindBasketItemParams) {
+    return await manager.findOne(BasketItem, {
+      where: { basketId, productId },
+      select: {
+        id: true,
+        count: true,
+      },
+    });
+  }
+
+  private async findBaksetItemJoinedProduct({
+    manager,
+    id,
+  }: FindBasketItemJoinedProductParams) {
+    return manager.findOne(BasketItem, {
+      where: { id },
+      select: basketItemsSelects,
+      relations: {
+        product: true,
+      },
+    });
   }
 }

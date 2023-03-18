@@ -1,6 +1,7 @@
 import { CommonService } from '@/common/common.service';
 import { PaginatedResponse } from '@/common/dtos/pagination.dto';
-import { Product } from '@/product/entities/product.entity';
+import { BasketItem } from '@/user/entities/basket-item.entity';
+import { orderBasketItemSelects } from '@/user/selects/order-basket.selects';
 import {
   BadRequestException,
   Injectable,
@@ -8,11 +9,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { CreateOrderParams } from './dtos/create-order.dto';
-import { OrderDto, GetOrdersParams } from './dtos/get-orders.dto';
+import { OrderDto } from './dtos/get-orders.dto';
 import { OrderItem } from './entities/order-item.entity';
 import { Order } from './entities/order.entity';
 import { ordersSelects } from './selects/orders.selects';
+import { GetOrdersParams } from './types/order.types';
 
 @Injectable()
 export class OrderService {
@@ -44,37 +45,34 @@ export class OrderService {
     });
   }
 
-  // 장바구니 주문을 별도로 만들자
-  createOrderFromBaskets() {
-    //
-  }
-
-  async createOrder({
-    products,
-    userId,
-  }: CreateOrderParams): Promise<OrderDto> {
+  async createOrderFromBasket(userId: string): Promise<OrderDto> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
 
     try {
-      queryRunner.startTransaction();
+      await queryRunner.startTransaction();
       const { manager } = queryRunner;
 
-      let totalPrice = 0;
-      let totalCount = 0;
-      for (const $product of products) {
-        const product = await manager.findOne(Product, {
-          where: { id: $product.productId },
-          select: {
-            id: true,
-            price: true,
+      const basketItems = await manager.find(BasketItem, {
+        where: { basketId: userId },
+        select: orderBasketItemSelects,
+        relations: {
+          product: {
+            restaurant: true,
           },
-        });
-        if (!product) {
-          throw new BadRequestException('존재하지 않는 상품입니다.');
-        }
-        totalPrice += product.price;
-        totalCount += $product.count;
+        },
+      });
+      if (basketItems.length === 0) {
+        throw new BadRequestException('장바구니에 상품이 없습니다.');
+      }
+
+      let totalCount = 0;
+      let totalPrice = 0;
+      for (const basketItem of basketItems) {
+        totalPrice +=
+          basketItem.product.price * basketItem.count +
+          basketItem.product.restaurant.deliveryFee;
+        totalCount += basketItem.count;
       }
 
       // order item은 foreign key로 orderId를 가지므로  order 먼저 생성
@@ -86,16 +84,17 @@ export class OrderService {
         }),
       );
       // 생성된 order의 id값을 이용하여 order item 생성
-      const orderItems = products.map((product) =>
+      const orderItems = basketItems.map((basketItem) =>
         manager.create(OrderItem, {
-          count: product.count,
-          productId: product.productId,
+          count: basketItem.count,
+          productId: basketItem.productId,
           orderId: order.id,
         }),
       );
       await manager.save(orderItems);
 
       // 장바구니 비우기
+      await manager.delete(BasketItem, { basketId: userId });
 
       // save가 반환한 값에는 join한 값이 존재하지 않으므로 새로 가져와서 응답으로 반환
       const orderWithItems = await manager.findOne(Order, {
@@ -107,9 +106,8 @@ export class OrderService {
           },
         },
       });
-      if (!orderWithItems) {
-        throw new InternalServerErrorException();
-      }
+      if (!orderWithItems) throw new InternalServerErrorException();
+
       await queryRunner.commitTransaction();
 
       return orderWithItems;

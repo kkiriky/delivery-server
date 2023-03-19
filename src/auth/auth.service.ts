@@ -23,7 +23,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async signup({ email, password, passwordConfirm }: SignUpBody) {
+  async signup({ email, nickname, password, passwordConfirm }: SignUpBody) {
     const isExist = await this.userRepository.findOne({
       where: { email },
       select: { id: true },
@@ -43,6 +43,7 @@ export class AuthService {
     await this.userRepository.save(
       this.userRepository.create({
         email,
+        nickname,
         password: hash,
         imageUrl: 'images/default.png',
       }),

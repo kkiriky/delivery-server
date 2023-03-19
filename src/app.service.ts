@@ -60,6 +60,7 @@ export class AppService {
     const userInstances = [...Array(20)].map((_, i) =>
       this.userRepository.create({
         email: faker.internet.email(),
+        nickname: faker.internet.userName(),
         password: '',
         imageUrl: `images/samples/${i % 6}.jpg`,
       }),

@@ -14,6 +14,9 @@ export class User extends BaseEntity {
   @Column({ unique: true, length: 50 })
   email: string;
 
+  @StringColumn({ apiPropertyOptions: { example: '홍길동' } })
+  nickname: string;
+
   @StringColumn({
     columnOptions: { select: false },
     apiPropertyOptions: { example: '123' },

@@ -20,3 +20,8 @@ export interface DeleteFromBasketParams {
   basketId: string;
   basketItemId: string;
 }
+
+export interface ChangeNicknameParams {
+  userId: string;
+  nickname: string;
+}

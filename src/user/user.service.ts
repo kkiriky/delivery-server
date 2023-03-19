@@ -10,6 +10,7 @@ import { BasketItem } from './entities/basket-item.entity';
 import { User } from './entities/user.entity';
 import { basketItemsSelects } from './selects/basketItems.selects';
 import {
+  ChangeNicknameParams,
   DeleteFromBasketParams,
   FindBasketItemJoinedProductParams,
   FindBasketItemParams,
@@ -32,6 +33,7 @@ export class UserService {
       where: { id },
       select: {
         id: true,
+        nickname: true,
         email: true,
         imageUrl: true,
       },
@@ -52,6 +54,18 @@ export class UserService {
     });
 
     return basketItems;
+  }
+
+  async changeNickname({ userId, nickname }: ChangeNicknameParams) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: { id: true, nickname: true },
+    });
+    if (!user) throw new BadRequestException();
+
+    await this.userRepository.update(userId, { nickname });
+
+    return { nickname };
   }
 
   async addToBasket({

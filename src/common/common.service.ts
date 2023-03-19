@@ -32,13 +32,15 @@ export class CommonService {
       }
     }
 
+    console.log(addWhere);
+
     const data = await repository.find({
-      ...(lastData && {
-        where: {
-          ...addWhere,
-          createdAt: LessThan(lastData.createdAt),
-        } as FindOptionsWhere<TData>,
-      }),
+      where: lastData
+        ? ({
+            ...addWhere,
+            createdAt: LessThan(lastData.createdAt),
+          } as FindOptionsWhere<TData>)
+        : addWhere,
       select,
       ...(relations && { relations }),
       order: { createdAt: 'DESC' } as FindOptionsOrder<TData>,
@@ -50,6 +52,7 @@ export class CommonService {
         ? 0
         : await repository.count({
             where: {
+              ...addWhere,
               createdAt: LessThan(data[data.length - 1].createdAt),
             } as FindOptionsWhere<TData>,
           });

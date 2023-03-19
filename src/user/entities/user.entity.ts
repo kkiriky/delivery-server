@@ -4,7 +4,7 @@ import { BaseEntity } from '@/common/entities/base.entity';
 import { Order } from '@/order/entities/order.entity';
 import { Review } from '@/restaurant/entities/review.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity()
@@ -14,7 +14,10 @@ export class User extends BaseEntity {
   @Column({ unique: true, length: 50 })
   email: string;
 
-  @StringColumn({ apiPropertyOptions: { example: '홍길동' } })
+  @ApiProperty({ example: '홍길동', required: false })
+  @IsOptional()
+  @IsString()
+  @Column({ unique: true })
   nickname: string;
 
   @StringColumn({
@@ -24,8 +27,9 @@ export class User extends BaseEntity {
   password: string;
 
   @ApiProperty({ example: '/images/logo/kkiri.png' })
+  @IsOptional()
   @IsString()
-  @Column({ nullable: true })
+  @Column()
   imageUrl: string;
 
   @OneToMany(() => Review, (review) => review.user)

@@ -6,11 +6,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { BasketItemDto } from './dtos/basket.dto';
+import { EditProfileResponse } from './dtos/edit-profile.dto';
 import { BasketItem } from './entities/basket-item.entity';
 import { User } from './entities/user.entity';
 import { basketItemsSelects } from './selects/basketItems.selects';
+import { userSelects } from './selects/user.selects';
 import {
-  ChangeNicknameParams,
+  EditProfileParams,
   DeleteFromBasketParams,
   FindBasketItemJoinedProductParams,
   FindBasketItemParams,
@@ -31,12 +33,7 @@ export class UserService {
   async getMe(id: string): Promise<User> {
     const user = await this.userRepository.findOneOrFail({
       where: { id },
-      select: {
-        id: true,
-        nickname: true,
-        email: true,
-        imageUrl: true,
-      },
+      select: userSelects,
     });
 
     return user;
@@ -56,16 +53,46 @@ export class UserService {
     return basketItems;
   }
 
-  async changeNickname({ userId, nickname }: ChangeNicknameParams) {
+  async editProfile({
+    userId,
+    nickname,
+    file,
+  }: EditProfileParams): Promise<EditProfileResponse> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      select: { id: true, nickname: true },
+      select: {
+        id: true,
+        nickname: true,
+        imageUrl: true,
+      },
     });
     if (!user) throw new BadRequestException();
 
-    await this.userRepository.update(userId, { nickname });
+    const isChangeNickname = user.nickname !== nickname;
 
-    return { nickname };
+    if (isChangeNickname) {
+      const isExistNickname = await this.userRepository.findOne({
+        where: { nickname },
+        select: { id: true },
+      });
+      if (isExistNickname) {
+        throw new BadRequestException('이미 사용 중인 닉네임입니다.');
+      }
+      await this.userRepository.update(userId, { nickname });
+    }
+
+    let imageUrl = '';
+    if (file) {
+      imageUrl = `uploads/${file.filename}`;
+      await this.userRepository.update(userId, {
+        imageUrl,
+      });
+    }
+
+    return {
+      nickname,
+      imageUrl: file ? imageUrl : user.imageUrl,
+    };
   }
 
   async addToBasket({

@@ -21,7 +21,8 @@ export interface DeleteFromBasketParams {
   basketItemId: string;
 }
 
-export interface ChangeNicknameParams {
+export interface EditProfileParams {
   userId: string;
   nickname: string;
+  file?: Express.Multer.File;
 }

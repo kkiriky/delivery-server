@@ -56,7 +56,19 @@
       - **allOf**: 모든 하위 스키마에 대해 값의 유효성을 검사합니다.  
         다양한 상속 관련 사용 사례를 다루기 위해 OAS 3에서 제공하는 개념
     - **@getSchemaPath**: 모델을 참조하기 위함
-    - **@ApiBody**: body 타입 지정(Method Decorator)
+    - **@ApiBody**: request body 타입 지정(Method Decorator)
+    - **@ApiConsumes**: request body 형식 지정 => @ApiConsumes('multipart/form-data')
 
 - **Javascript**
+
   - reduce의 기능은 대부분 **for-of**로 iterate(loop)하면 대부분 대체가 가능
+
+- **파일 업로드**
+
+  - 파일 데이터와 함께 다른 데이터를 받아야 하는 경우
+  - **form data**는 **@Body**로 받을 수 있음
+
+  > 1. 파일업로드를 하려는 모듈에서 **Multer Module을 임포트**
+  > 2. 저장 경로(destination)와 파일 이름(fileName), 용량 제한(limit) 등 설정: **factory 사용**
+  > 3. **FileInterceptor**를 이용하여 파일 업로드: @UseInterceptors(FileInterceptor('image'))
+  > 4. 업로드 된 파일은 **@UploadedFile()** 파라미터 데코레이터를 이용하여 조회 가능

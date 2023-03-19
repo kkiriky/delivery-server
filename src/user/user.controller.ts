@@ -10,14 +10,23 @@ import {
   Patch,
   UseGuards,
   Param,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   BasketItemDto,
   BasketItemIdParam,
   PatchBasketBody,
 } from './dtos/basket.dto';
-import { ChangeNicknameDto } from './dtos/change-nickname.dto';
+import { EditProfileBody, EditProfileResponse } from './dtos/edit-profile.dto';
 import { GetMeResponse } from './dtos/get-me.dto';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
@@ -36,14 +45,18 @@ export class UserController {
     return this.userService.getMe(userId);
   }
 
-  @ApiOperation({ summary: '닉네임 변경' })
-  @ApiOkResponse({ type: ChangeNicknameDto })
-  @Patch('me/nickname')
+  @ApiOperation({ summary: '프로필 수정' })
+  @ApiOkResponse({ type: EditProfileResponse })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: EditProfileBody })
+  @UseInterceptors(FileInterceptor('image'))
+  @Patch('me/profile')
   changeNickname(
     @UserId() userId: string,
-    @Body() { nickname }: ChangeNicknameDto,
-  ) {
-    return this.userService.changeNickname({ userId, nickname });
+    @Body() { nickname }: EditProfileBody,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<EditProfileResponse> {
+    return this.userService.editProfile({ userId, nickname, file });
   }
 
   @ApiOperation({ summary: '내 장바구니 가져오기' })

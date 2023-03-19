@@ -6,6 +6,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import path from 'path';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { checkDirectory } from './common/utils/check-directory';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -42,6 +43,8 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);
   }
+
+  checkDirectory('/assets/uploads');
 
   await app.listen(PORT, () =>
     logger.log(`${PORT}번 포트에서 서버 실행 중  ✅ `),

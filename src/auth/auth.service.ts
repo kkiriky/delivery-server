@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import {
   BadRequestException,
   Injectable,
@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { isJwtError, isJwtPayload } from './types/jwt.types';
 import { RefreshResponse } from './dtos/refresh.dto';
 import { SignUpBody } from './dtos/signup.dto';
+import { Basket } from '@/user/entities/basket.entity';
 
 @Injectable()
 export class AuthService {
@@ -20,16 +21,28 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
+    private readonly dataSource: DataSource,
+
     private readonly configService: ConfigService,
   ) {}
 
   async signup({ email, nickname, password, passwordConfirm }: SignUpBody) {
-    const isExist = await this.userRepository.findOne({
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+
+    const _user = await this.userRepository.findOne({
       where: { email },
+      select: { id: true, nickname: true },
+    });
+    if (_user) {
+      throw new BadRequestException('이미 사용 중인 이메일입니다.');
+    }
+    const isExistNickname = await this.userRepository.findOne({
+      where: { nickname },
       select: { id: true },
     });
-    if (isExist) {
-      throw new BadRequestException('이미 존재하는 이메일입니다.');
+    if (isExistNickname) {
+      throw new BadRequestException('이미 사용 중인 닉네임입니다.');
     }
 
     if (password !== passwordConfirm) {
@@ -40,16 +53,35 @@ export class AuthService {
 
     const hash = await bcrypt.hash(password, 12);
 
-    await this.userRepository.save(
-      this.userRepository.create({
-        email,
-        nickname,
-        password: hash,
-        imageUrl: 'images/default.png',
-      }),
-    );
+    try {
+      await queryRunner.startTransaction();
+      const { manager } = queryRunner;
 
-    return 'ok';
+      const user = await manager.save(
+        manager.create(User, {
+          email,
+          nickname,
+          password: hash,
+          imageUrl: 'images/default.png',
+        }),
+      );
+
+      await manager.save(
+        manager.create(Basket, {
+          id: user.id,
+          userId: user.id,
+        }),
+      );
+
+      await queryRunner.commitTransaction();
+
+      return 'ok';
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async login({ email, password }: LoginBody): Promise<LoginResponse> {

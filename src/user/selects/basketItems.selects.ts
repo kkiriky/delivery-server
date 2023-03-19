@@ -10,5 +10,9 @@ export const basketItemsSelects: FindOptionsSelect<BasketItem> = {
     imgUrl: true,
     detail: true,
     price: true,
+    restaurant: {
+      id: true,
+      deliveryFee: true,
+    },
   },
 };

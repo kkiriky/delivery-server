@@ -8,7 +8,7 @@ import { Product } from '@/product/entities/product.entity';
 import { Review } from '@/restaurant/entities/review.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber } from 'class-validator';
-import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 @Entity()
 export class Restaurant extends BaseEntity {
@@ -54,6 +54,7 @@ export class Restaurant extends BaseEntity {
   @OneToMany(() => Review, (review) => review.restaurant)
   reviews: Review[];
 
-  @ManyToMany(() => Order)
+  @JoinTable({ name: 'restaurant_order' })
+  @ManyToMany(() => Order, (order) => order.restaurants)
   orders: Order[];
 }

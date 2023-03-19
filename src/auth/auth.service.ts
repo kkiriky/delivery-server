@@ -12,14 +12,44 @@ import jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { isJwtError, isJwtPayload } from './types/jwt.types';
 import { RefreshResponse } from './dtos/refresh.dto';
+import { SignUpBody } from './dtos/signup.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
     private readonly configService: ConfigService,
   ) {}
+
+  async signup({ email, password, passwordConfirm }: SignUpBody) {
+    const isExist = await this.userRepository.findOne({
+      where: { email },
+      select: { id: true },
+    });
+    if (isExist) {
+      throw new BadRequestException('이미 존재하는 이메일입니다.');
+    }
+
+    if (password !== passwordConfirm) {
+      throw new BadRequestException(
+        '비밀번호와 비밀번호 확인이 일치하지 않습니다.',
+      );
+    }
+
+    const hash = await bcrypt.hash(password, 12);
+
+    await this.userRepository.save(
+      this.userRepository.create({
+        email,
+        password: hash,
+        imageUrl: 'images/default.png',
+      }),
+    );
+
+    return 'ok';
+  }
 
   async login({ email, password }: LoginBody): Promise<LoginResponse> {
     const user = await this.userRepository.findOne({
@@ -53,7 +83,7 @@ export class AuthService {
         this.configService.get('REFRESH_TOKEN_SECRET')!,
       );
       if (!isJwtPayload(payload)) {
-        throw new BadRequestException('잘못된 요청입니다.');
+        throw new UnauthorizedException('유효하지 않은 토큰입니다.');
       }
 
       const accessToken = this.issueAccessToken(payload.userId);
@@ -62,13 +92,11 @@ export class AuthService {
     } catch (err) {
       if (!isJwtError(err)) throw err;
 
-      if (err.name === 'JsonWebTokenError') {
-        throw new BadRequestException('잘못된 요청입니다.');
-      } else if (err.name === 'TokenExpiredError') {
+      if (err.name === 'TokenExpiredError') {
         throw new UnauthorizedException('토큰이 만료되었습니다.');
-      } else {
-        throw err;
       }
+
+      throw err;
     }
   }
 

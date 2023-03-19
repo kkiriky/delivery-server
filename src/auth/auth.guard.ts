@@ -1,6 +1,5 @@
 import { ConfigService } from '@nestjs/config';
 import {
-  BadRequestException,
   CanActivate,
   ExecutionContext,
   Injectable,
@@ -31,7 +30,7 @@ export class AuthGuard implements CanActivate {
         this.configService.get('ACCESS_TOKEN_SECRET')!,
       );
       if (!isJwtPayload(payload)) {
-        throw new BadRequestException('잘못된 요청입니다.');
+        throw new UnauthorizedException('유효하지 않은 토큰입니다.');
       }
 
       req.userId = payload.userId;
@@ -40,13 +39,11 @@ export class AuthGuard implements CanActivate {
     } catch (err) {
       if (!isJwtError(err)) throw err;
 
-      if (err.name === 'JsonWebTokenError') {
-        throw new BadRequestException('잘못된 요청입니다.');
-      } else if (err.name === 'TokenExpiredError') {
+      if (err.name === 'TokenExpiredError') {
         throw new UnauthorizedException('토큰이 만료되었습니다.');
-      } else {
-        throw err;
       }
+
+      throw err;
     }
   }
 }

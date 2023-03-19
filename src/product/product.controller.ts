@@ -11,6 +11,7 @@ import { GetProducts } from './dtos/get-products.dto';
 import { ProductService } from './product.service';
 
 @ApiTags('Product')
+@ApiHeaderBearer()
 @UseGuards(AuthGuard)
 @Controller('product')
 export class ProductController {
@@ -18,7 +19,6 @@ export class ProductController {
 
   @ApiOperation({ summary: '상품 목록' })
   @ApiOkPaginatedResponse(GetProducts)
-  @ApiHeaderBearer()
   @Get()
   getProducts(
     @Query() paginationQueries: PaginationQueries,

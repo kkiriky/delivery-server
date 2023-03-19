@@ -13,8 +13,9 @@ import { OrderDto } from './dtos/get-orders.dto';
 import { OrderItem } from './entities/order-item.entity';
 import { RestaurantToOrder } from '../restaurant/entities/restaurant-order.entity';
 import { Order } from './entities/order.entity';
-import { ordersSelects } from './selects/orders.selects';
+import { ordersSelects } from './find-options/orders.selects';
 import { GetOrdersParams } from './types/order.types';
+import { orderRelations } from './find-options/orders.relations';
 
 @Injectable()
 export class OrderService {
@@ -38,12 +39,7 @@ export class OrderService {
       repository: this.orderRepository,
       addWhere: { userId },
       select: ordersSelects,
-      relations: {
-        orderItems: {
-          product: true,
-        },
-        restaurants: true,
-      },
+      relations: orderRelations,
     });
   }
 
@@ -117,11 +113,7 @@ export class OrderService {
       const orderWithItems = await manager.findOne(Order, {
         where: { id: order.id },
         select: ordersSelects,
-        relations: {
-          orderItems: {
-            product: true,
-          },
-        },
+        relations: orderRelations,
       });
       if (!orderWithItems) throw new InternalServerErrorException();
 

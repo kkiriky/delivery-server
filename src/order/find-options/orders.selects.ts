@@ -13,10 +13,11 @@ export const ordersSelects: FindOptionsSelect<Order> = {
       id: true,
       name: true,
       imgUrl: true,
+      restaurant: {
+        id: true,
+        name: true,
+        thumbUrl: true,
+      },
     },
-  },
-  restaurants: {
-    id: true,
-    name: true,
   },
 };

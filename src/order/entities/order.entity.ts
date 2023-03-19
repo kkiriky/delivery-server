@@ -10,7 +10,7 @@ import {
 import { BaseEntity } from '@/common/entities/base.entity';
 import { Restaurant } from '@/restaurant/entities/restaurant.entity';
 import { User } from '@/user/entities/user.entity';
-import { Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import { Entity, ManyToMany, OneToMany } from 'typeorm';
 import { OrderItem } from './order-item.entity';
 
 @Entity()
@@ -29,7 +29,6 @@ export class Order extends BaseEntity {
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
   orderItems: OrderItem[];
 
-  @JoinTable({ name: 'restaurant_order' })
-  @ManyToMany(() => Restaurant)
+  @ManyToMany(() => Restaurant, (restaurant) => restaurant.orders)
   restaurants: Restaurant[];
 }

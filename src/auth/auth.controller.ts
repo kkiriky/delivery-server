@@ -10,11 +10,19 @@ import { Request as RequestType } from 'express';
 import { AuthService } from './auth.service';
 import { LoginBody, LoginResponse } from './dtos/login.dto';
 import { RefreshResponse } from './dtos/refresh.dto';
+import { SignUpBody } from './dtos/signup.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @ApiOperation({ summary: '회원가입' })
+  @ApiOkResponse({ description: 'ok ' })
+  @Post('signup')
+  signup(@Body() signupBody: SignUpBody) {
+    return this.authService.signup(signupBody);
+  }
 
   @ApiOperation({ summary: '로그인' })
   @ApiOkResponse({ type: LoginResponse })

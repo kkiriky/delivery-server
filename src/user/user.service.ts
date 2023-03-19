@@ -45,7 +45,9 @@ export class UserService {
       where: { basketId },
       select: basketItemsSelects,
       relations: {
-        product: true,
+        product: {
+          restaurant: true,
+        },
       },
     });
 
@@ -210,7 +212,9 @@ export class UserService {
       where: { id },
       select: basketItemsSelects,
       relations: {
-        product: true,
+        product: {
+          restaurant: true,
+        },
       },
     });
   }

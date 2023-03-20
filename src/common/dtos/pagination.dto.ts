@@ -8,10 +8,7 @@ export class PaginationQueries {
   @IsInt()
   count?: number;
 
-  @ApiProperty({
-    example: uuidExample,
-    required: false,
-  })
+  @ApiProperty({ example: uuidExample, required: false })
   @IsOptional()
   @IsString()
   lastId?: string;

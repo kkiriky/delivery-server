@@ -32,8 +32,6 @@ export class CommonService {
       }
     }
 
-    console.log(addWhere);
-
     const data = await repository.find({
       where: lastData
         ? ({

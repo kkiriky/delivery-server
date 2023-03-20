@@ -15,7 +15,6 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  ApiBody,
   ApiConsumes,
   ApiOkResponse,
   ApiOperation,
@@ -48,7 +47,6 @@ export class UserController {
   @ApiOperation({ summary: '프로필 수정' })
   @ApiOkResponse({ type: EditProfileResponse })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: EditProfileBody })
   @UseInterceptors(FileInterceptor('image'))
   @Patch('me/profile')
   changeNickname(

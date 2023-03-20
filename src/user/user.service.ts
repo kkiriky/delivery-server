@@ -58,41 +58,54 @@ export class UserService {
     nickname,
     file,
   }: EditProfileParams): Promise<EditProfileResponse> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      select: {
-        id: true,
-        nickname: true,
-        imageUrl: true,
-      },
-    });
-    if (!user) throw new BadRequestException();
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
 
-    const isChangeNickname = user.nickname !== nickname;
+    try {
+      await queryRunner.startTransaction();
+      const { manager } = queryRunner;
 
-    if (isChangeNickname) {
-      const isExistNickname = await this.userRepository.findOne({
-        where: { nickname },
-        select: { id: true },
+      const user = await manager.findOne(User, {
+        where: { id: userId },
+        select: {
+          id: true,
+          nickname: true,
+          imageUrl: true,
+        },
       });
-      if (isExistNickname) {
-        throw new BadRequestException('이미 사용 중인 닉네임입니다.');
+      if (!user) throw new BadRequestException();
+
+      const isChangeNickname = user.nickname !== nickname;
+
+      if (isChangeNickname) {
+        const isExistNickname = await manager.findOne(User, {
+          where: { nickname },
+          select: { id: true },
+        });
+        if (isExistNickname) {
+          throw new BadRequestException('이미 사용 중인 닉네임입니다.');
+        }
+        await manager.update(User, userId, { nickname });
       }
-      await this.userRepository.update(userId, { nickname });
-    }
 
-    let imageUrl = '';
-    if (file) {
-      imageUrl = `uploads/${file.filename}`;
-      await this.userRepository.update(userId, {
-        imageUrl,
-      });
-    }
+      let imageUrl = '';
+      if (file) {
+        imageUrl = `uploads/${file.filename}`;
+        await manager.update(User, userId, { imageUrl });
+      }
 
-    return {
-      nickname,
-      imageUrl: file ? imageUrl : user.imageUrl,
-    };
+      await queryRunner.commitTransaction();
+
+      return {
+        nickname,
+        imageUrl: file ? imageUrl : user.imageUrl,
+      };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async addToBasket({
@@ -121,13 +134,9 @@ export class UserService {
           }),
         );
       } else {
-        await manager.update(
-          BasketItem,
-          { id: basketItem.id },
-          {
-            count: basketItem.count + 1,
-          },
-        );
+        await manager.update(BasketItem, basketItem.id, {
+          count: basketItem.count + 1,
+        });
       }
 
       const basketItemJoinedProduct = await this.findBaksetItemJoinedProduct({
@@ -171,13 +180,11 @@ export class UserService {
       }
 
       if (basketItem.count === 1) {
-        await manager.delete(BasketItem, { id: basketItem.id });
+        await manager.delete(BasketItem, basketItem.id);
       } else {
-        await manager.update(
-          BasketItem,
-          { id: basketItem.id },
-          { count: basketItem.count - 1 },
-        );
+        await manager.update(BasketItem, basketItem.id, {
+          count: basketItem.count - 1,
+        });
       }
 
       const basketItemJoinedProduct = await this.findBaksetItemJoinedProduct({
@@ -218,7 +225,7 @@ export class UserService {
         throw new BadRequestException('장바구니에 상품이 존재하지 않습니다.');
       }
 
-      await manager.delete(BasketItem, { id: basketItemId });
+      await manager.delete(BasketItem, basketItemId);
 
       await queryRunner.commitTransaction();
 

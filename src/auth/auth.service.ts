@@ -123,9 +123,7 @@ export class AuthService {
 
       return { accessToken };
     } catch (err) {
-      if (!isJwtError(err)) throw err;
-
-      if (err.name === 'TokenExpiredError') {
+      if (isJwtError(err) && err.name === 'TokenExpiredError') {
         throw new UnauthorizedException('토큰이 만료되었습니다.');
       }
 
@@ -137,7 +135,7 @@ export class AuthService {
     return jwt.sign(
       { userId, type: 'access' },
       this.configService.get('ACCESS_TOKEN_SECRET')!,
-      { expiresIn: '300s' },
+      { expiresIn: '600s' },
     );
   }
 

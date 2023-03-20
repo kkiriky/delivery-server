@@ -37,9 +37,7 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch (err) {
-      if (!isJwtError(err)) throw err;
-
-      if (err.name === 'TokenExpiredError') {
+      if (isJwtError(err) && err.name === 'TokenExpiredError') {
         throw new UnauthorizedException('토큰이 만료되었습니다.');
       }
 

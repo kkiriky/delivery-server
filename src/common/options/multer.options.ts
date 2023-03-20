@@ -18,8 +18,9 @@ export const multerOptionsFactory = (): MulterOptions => {
           done(error, '');
           return;
         }
-        const basename = path.basename(file.originalname, ext);
-        done(null, basename + Date.now() + ext);
+        done(null, file.originalname);
+        // const basename = path.basename(file.originalname, ext);
+        // done(null, basename + Date.now() + ext);
       },
     }),
     limits: { fileSize: 10 * 1024 * 1024 },

@@ -1,5 +1,9 @@
 # Kkiri Delivery Server
 
+### DB Modeling
+
+<img src="./kkiri-delivery-EDR.png"  width="600">
+
 ### API 작업 방향
 
 1. **DB 설계 및 Entity 정의**  

@@ -1,3 +1,9 @@
+export interface SocialLoginParams {
+  email: string;
+  nickname: string;
+}
+
+/* Kakao */
 export interface KakaoUserInfo {
   id: number;
   connected_at: Date;
@@ -5,7 +11,7 @@ export interface KakaoUserInfo {
   kakao_account: KakaoAccount;
 }
 
-export interface KakaoAccount {
+interface KakaoAccount {
   profile_nickname_needs_agreement: boolean;
   profile: KakaoProperty;
   has_email: boolean;
@@ -15,6 +21,18 @@ export interface KakaoAccount {
   email: string;
 }
 
-export interface KakaoProperty {
+interface KakaoProperty {
   nickname: string;
+}
+/* Naver */
+export interface NaverLoginResponse {
+  resultcode: string;
+  message: string;
+  response: NaverUserInfo;
+}
+
+interface NaverUserInfo {
+  id: string;
+  nickname: string;
+  email: string;
 }

@@ -15,7 +15,11 @@ import { RefreshResponse } from './dtos/refresh.dto';
 import { SignUpBody } from './dtos/signup.dto';
 import { Basket } from '@/user/entities/basket.entity';
 import axios from 'axios';
-import { KakaoUserInfo } from './types/social-login.types';
+import {
+  KakaoUserInfo,
+  NaverLoginResponse,
+  SocialLoginParams,
+} from './types/social-login.types';
 
 @Injectable()
 export class AuthService {
@@ -106,7 +110,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async kakaoLogin(accssToken: string): Promise<LoginResponse> {
+  async kakaoLogin(accessToken: string): Promise<LoginResponse> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
 
@@ -117,13 +121,69 @@ export class AuthService {
         property_keys: ['kakao_account.email', 'kakao_acount.profile.nickname'],
       },
       headers: {
-        Authorization: `Bearer ${accssToken}`,
+        Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
     });
 
     const { email } = data.kakao_account;
     const { nickname } = data.kakao_account.profile;
+
+    const tokens = await this.socialLogin({ email, nickname });
+
+    return tokens;
+  }
+
+  async naverLogin(accessToken: string): Promise<LoginResponse> {
+    const { data } = await axios<NaverLoginResponse>({
+      url: 'https://openapi.naver.com/v1/nid/me',
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'text/json;charset=utf-8',
+      },
+    });
+
+    const { email, nickname } = data.response;
+
+    const tokens = await this.socialLogin({ email, nickname });
+
+    return tokens;
+  }
+
+  async refresh(authorization: string | undefined): Promise<RefreshResponse> {
+    const refreshToken = authorization?.split(' ')[1];
+    if (!refreshToken) {
+      throw new UnauthorizedException('토큰이 존재하지 않습니다.');
+    }
+
+    try {
+      const payload = jwt.verify(
+        refreshToken,
+        this.configService.get('REFRESH_TOKEN_SECRET')!,
+      );
+      if (!isJwtPayload(payload)) {
+        throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+      }
+
+      const accessToken = this.issueAccessToken(payload.userId);
+
+      return { accessToken };
+    } catch (err) {
+      if (isJwtError(err) && err.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('토큰이 만료되었습니다.');
+      }
+
+      throw err;
+    }
+  }
+
+  private async socialLogin({
+    email,
+    nickname,
+  }: SocialLoginParams): Promise<LoginResponse> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
 
     try {
       await queryRunner.startTransaction();
@@ -151,33 +211,6 @@ export class AuthService {
       throw err;
     } finally {
       await queryRunner.release();
-    }
-  }
-
-  async refresh(authorization: string | undefined): Promise<RefreshResponse> {
-    const refreshToken = authorization?.split(' ')[1];
-    if (!refreshToken) {
-      throw new UnauthorizedException('토큰이 존재하지 않습니다.');
-    }
-
-    try {
-      const payload = jwt.verify(
-        refreshToken,
-        this.configService.get('REFRESH_TOKEN_SECRET')!,
-      );
-      if (!isJwtPayload(payload)) {
-        throw new UnauthorizedException('유효하지 않은 토큰입니다.');
-      }
-
-      const accessToken = this.issueAccessToken(payload.userId);
-
-      return { accessToken };
-    } catch (err) {
-      if (isJwtError(err) && err.name === 'TokenExpiredError') {
-        throw new UnauthorizedException('토큰이 만료되었습니다.');
-      }
-
-      throw err;
     }
   }
 

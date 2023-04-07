@@ -40,6 +40,14 @@ export class AuthController {
     return this.authService.kakaoLogin(accessToken);
   }
 
+  @ApiOperation({ summary: '네이버 로그인' })
+  @ApiHeaderBearer()
+  @ApiOkResponse({ type: LoginResponse })
+  @Get('naver')
+  naverLogin(@AccessToken() accessToken: string): Promise<LoginResponse> {
+    return this.authService.naverLogin(accessToken);
+  }
+
   @ApiOperation({ summary: '액세스 토큰 리프레시' })
   @ApiHeaderBearer()
   @ApiCreatedResponse({ type: RefreshResponse })

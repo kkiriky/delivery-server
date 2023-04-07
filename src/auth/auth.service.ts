@@ -14,6 +14,8 @@ import { isJwtError, isJwtPayload } from './types/jwt.types';
 import { RefreshResponse } from './dtos/refresh.dto';
 import { SignUpBody } from './dtos/signup.dto';
 import { Basket } from '@/user/entities/basket.entity';
+import axios from 'axios';
+import { KakaoUserInfo } from './types/social-login.types';
 
 @Injectable()
 export class AuthService {
@@ -102,6 +104,54 @@ export class AuthService {
     const refreshToken = this.issueRefreshToken(user.id);
 
     return { accessToken, refreshToken };
+  }
+
+  async kakaoLogin(accssToken: string): Promise<LoginResponse> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+
+    const { data } = await axios<KakaoUserInfo>({
+      url: 'https://kapi.kakao.com/v2/user/me',
+      method: 'POST',
+      data: {
+        property_keys: ['kakao_account.email', 'kakao_acount.profile.nickname'],
+      },
+      headers: {
+        Authorization: `Bearer ${accssToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+      },
+    });
+
+    const { email } = data.kakao_account;
+    const { nickname } = data.kakao_account.profile;
+
+    try {
+      await queryRunner.startTransaction();
+      const { manager } = queryRunner;
+
+      let user = await manager.findOne(User, { where: { email } });
+      if (!user) {
+        user = await manager.save(
+          manager.create(User, {
+            email,
+            nickname,
+            imageUrl: 'images/default.png',
+          }),
+        );
+      }
+
+      const accessToken = this.issueAccessToken(user.id);
+      const refreshToken = this.issueRefreshToken(user.id);
+
+      await queryRunner.commitTransaction();
+
+      return { accessToken, refreshToken };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async refresh(authorization: string | undefined): Promise<RefreshResponse> {

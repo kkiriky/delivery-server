@@ -21,7 +21,7 @@ export class User extends BaseEntity {
   nickname: string;
 
   @StringColumn({
-    columnOptions: { select: false },
+    columnOptions: { select: false, nullable: true },
     apiPropertyOptions: { example: '123' },
   })
   password: string;

@@ -8,7 +8,7 @@ import {
 import { PaginationQueries } from '../dtos/pagination.dto';
 import { BaseEntity } from '../entities/base.entity';
 
-export interface CustomRequest extends Request {
+export interface ExtendedRequest extends Request {
   userId: string;
 }
 

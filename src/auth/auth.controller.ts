@@ -1,5 +1,6 @@
+import { AccessToken } from '@/common/decorators/access-token.decorator';
 import { ApiHeaderBearer } from '@/common/decorators/api-header-bearer.decorator';
-import { Body, Controller, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request } from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
@@ -29,6 +30,14 @@ export class AuthController {
   @Post('login')
   login(@Body() loginBody: LoginBody): Promise<LoginResponse> {
     return this.authService.login(loginBody);
+  }
+
+  @ApiOperation({ summary: '카카오 로그인' })
+  @ApiHeaderBearer()
+  @ApiOkResponse({ type: LoginResponse })
+  @Get('kakao')
+  kakaoLogin(@AccessToken() accessToken: string): Promise<LoginResponse> {
+    return this.authService.kakaoLogin(accessToken);
   }
 
   @ApiOperation({ summary: '액세스 토큰 리프레시' })

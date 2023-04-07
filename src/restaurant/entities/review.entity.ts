@@ -11,7 +11,7 @@ import { ReviewImage } from './review-image.entity';
 
 @Entity()
 export class Review extends BaseEntity {
-  @IntColumn({ columnOptions: { type: 'text' } })
+  @IntColumn()
   rating: number;
 
   @StringColumn({ columnOptions: { type: 'text' } })

@@ -8,7 +8,7 @@ import {
 import { Observable } from 'rxjs';
 import jwt from 'jsonwebtoken';
 import { isJwtError, isJwtPayload } from './types/jwt.types';
-import { CustomRequest } from '@/common/types/common.types';
+import { ExtendedRequest } from '@/common/types/common.types';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const req: CustomRequest = context.switchToHttp().getRequest();
+    const req: ExtendedRequest = context.switchToHttp().getRequest();
 
     const accessToken = req.headers.authorization?.split(' ')[1];
     if (!accessToken) {

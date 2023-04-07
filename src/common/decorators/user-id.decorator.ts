@@ -1,9 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { CustomRequest } from '../types/common.types';
+import { ExtendedRequest } from '../types/common.types';
 
 export const UserId = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext) => {
-    const req: CustomRequest = ctx.switchToHttp().getRequest();
+    const req: ExtendedRequest = ctx.switchToHttp().getRequest();
     return req.userId;
   },
 );

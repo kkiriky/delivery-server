@@ -3,7 +3,12 @@ import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
 import { ReviewImage } from '../entities/review-image.entity';
 import { Review } from '../entities/review.entity';
 
-class ReviewUser extends PickType(User, ['id', 'email', 'imageUrl']) {}
+class ReviewUser extends PickType(User, [
+  'id',
+  'email',
+  'nickname',
+  'imageUrl',
+]) {}
 class RestaurantReviewImage extends PickType(ReviewImage, ['id', 'imgUrl']) {}
 
 export class GetReviews extends OmitType(Review, [

@@ -20,6 +20,7 @@ import {
   NaverLoginResponse,
   SocialLoginParams,
 } from './types/social-login.types';
+import { OAuth2Client } from 'google-auth-library';
 
 @Injectable()
 export class AuthService {
@@ -147,7 +148,25 @@ export class AuthService {
     const { email, nickname } = data.response;
 
     const tokens = await this.socialLogin({ email, nickname });
+    return tokens;
+  }
 
+  async googleLogin(idToken: string): Promise<LoginResponse> {
+    const client = new OAuth2Client(
+      this.configService.get('GOOGLE_SERVICE_CLIENT_ID'),
+    );
+
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: this.configService.get('GOOGLE_SERVICE_CLIENT_ID'),
+    });
+    const payload = ticket.getPayload();
+    if (!payload?.email || !payload?.name) {
+      throw new BadRequestException();
+    }
+
+    const { email, name: nickname } = payload;
+    const tokens = await this.socialLogin({ email, nickname });
     return tokens;
   }
 

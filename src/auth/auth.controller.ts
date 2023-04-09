@@ -1,4 +1,4 @@
-import { AccessToken } from '@/common/decorators/access-token.decorator';
+import { HeaderToken } from '@/common/decorators/header-token.decorator';
 import { ApiHeaderBearer } from '@/common/decorators/api-header-bearer.decorator';
 import { Body, Controller, Get, Post, Request } from '@nestjs/common';
 import {
@@ -36,7 +36,7 @@ export class AuthController {
   @ApiHeaderBearer()
   @ApiOkResponse({ type: LoginResponse })
   @Get('kakao')
-  kakaoLogin(@AccessToken() accessToken: string): Promise<LoginResponse> {
+  kakaoLogin(@HeaderToken() accessToken: string): Promise<LoginResponse> {
     return this.authService.kakaoLogin(accessToken);
   }
 
@@ -44,8 +44,16 @@ export class AuthController {
   @ApiHeaderBearer()
   @ApiOkResponse({ type: LoginResponse })
   @Get('naver')
-  naverLogin(@AccessToken() accessToken: string): Promise<LoginResponse> {
+  naverLogin(@HeaderToken() accessToken: string): Promise<LoginResponse> {
     return this.authService.naverLogin(accessToken);
+  }
+
+  @ApiOperation({ summary: '구글 로그인' })
+  @ApiHeaderBearer()
+  @ApiOkResponse({ type: LoginResponse })
+  @Get('google')
+  googleLogin(@HeaderToken() idToken: string): Promise<LoginResponse> {
+    return this.authService.googleLogin(idToken);
   }
 
   @ApiOperation({ summary: '액세스 토큰 리프레시' })
